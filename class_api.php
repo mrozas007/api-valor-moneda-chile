@@ -35,18 +35,35 @@ class class_api extends class_model
         return $dolar;
     }
 
+    private function getEuro()
+    {
+        $euro = null;
+
+        $JsonSource = "https://api.sbif.cl/api-sbifv3/recursos_api/euro?apikey=" . $this->key . "&formato=json";
+
+        $json = json_decode($this->consume_api($JsonSource));
+
+        if (!isset($json->CodigoHTTP)) {
+            $euro   =  str_replace(array("$", ".", ","), array("", "", "."), $json->Euros[0]->Valor);
+        }
+
+        return $euro;
+    }
+
     function actualizaMonedas()
     {
         $dolar = $this->getDolar();
         $dolar = 100;
         if (!is_null($dolar)) {
-            echo "<<<<";
+            echo "dolar<<<<";
         }
         echo "<hr>";
 
-        $JsonSource = "https://api.sbif.cl/api-sbifv3/recursos_api/euro?apikey=" . $this->key . "&formato=json";
-        echo $this->consume_api($JsonSource);
-
+        $euro = $this->getEuro();
+        $euro = 111;
+        if (!is_null($euro)) {
+            echo "euro<<<<";
+        }
 
         $JsonSource = "https://api.sbif.cl/api-sbifv3/recursos_api/utm?apikey=" . $this->key . "&formato=json";
         echo $this->consume_api($JsonSource);
