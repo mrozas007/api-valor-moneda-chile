@@ -50,29 +50,46 @@ class class_api extends class_model
         return $euro;
     }
 
-    function actualizaMonedas()
+    private function getUtm()
     {
-        $dolar = $this->getDolar();
-        $dolar = 100;
-        if (!is_null($dolar)) {
-            echo "dolar<<<<";
-        }
-        echo "<hr>";
-
-        $euro = $this->getEuro();
-        $euro = 111;
-        if (!is_null($euro)) {
-            echo "euro<<<<";
-        }
+        $utm = null;
 
         $JsonSource = "https://api.sbif.cl/api-sbifv3/recursos_api/utm?apikey=" . $this->key . "&formato=json";
-        echo $this->consume_api($JsonSource);
-        echo "<hr><pre>";
-        print_r($this->updateMoneda("", ""));
+
+        $json = json_decode($this->consume_api($JsonSource));
+
+        if (!isset($json->CodigoHTTP)) {
+            $utm    =  str_replace(array("$", ".", ","), array("", "", "."), $json->UTMs[0]->Valor);
+        }
+
+        return $utm;
+    }
+
+    function actualizaMonedas()
+    {
+
+        $dolar = $this->getDolar();
+        if (!is_null($dolar)) {
+            $statusDolar = $this->updateMoneda($dolar, "DOLAR");
+        }
+
+
+        $euro = $this->getEuro();
+        if (!is_null($euro)) {
+            $statusEuro = $this->updateMoneda($euro, "EURO");
+        }
+
+        $utm = $this->getUtm();
+        if (!is_null($utm)) {
+            $statusUTM = $this->updateMoneda($utm, "UTM");
+        }
+
+        echo "<pre>";
+        print_r($this->getMoneda());
         echo "</pre>";
     }
 
-    private function updateMoneda($JsonSource, $moneda)
+    private function getMoneda()
     {
 
         $sql = "SELECT *FROM ci_precio_monedas";
@@ -82,6 +99,26 @@ class class_api extends class_model
 
             return $respuesta;
             $respuesta->close();
+            $this->_db->close();
+        }
+    }
+
+    private function updateMoneda($valor, $moneda)
+    {
+
+        $sql = "UPDATE ci_precio_monedas SET
+                    ci_pm_fecha = sysdate(),
+                    ci_pm_precio = $valor 
+                WHERE 
+                    ci_pm_moneda = '$moneda'";
+
+        $modifica = $this->_db->query($sql);
+
+        if (!$modifica) {
+            return  false;
+        } else {
+            return $modifica;
+            $modifica->close();
             $this->_db->close();
         }
     }
