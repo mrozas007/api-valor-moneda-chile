@@ -3,7 +3,7 @@ require_once "./class_model.php";
 class class_api extends class_model
 {
     protected $key = "56aabba320a8b164ab51be7d4d0af840e46fb912";
-    protected $debugger = false;
+    protected $debugger = true;
 
     private function consume_api($JsonSource)
     {
@@ -90,6 +90,7 @@ class class_api extends class_model
             print_r($this->getMoneda());
             echo "</pre>";
         }
+        $this->_db->close();
     }
 
     private function getMoneda()
@@ -99,10 +100,7 @@ class class_api extends class_model
         $busca = $this->_db->query($sql);
         $respuesta = $busca->fetch_all(MYSQLI_ASSOC);
         if ($respuesta) {
-
             return $respuesta;
-            $respuesta->close();
-            $this->_db->close();
         }
     }
 
@@ -120,9 +118,7 @@ class class_api extends class_model
         if (!$modifica) {
             return  false;
         } else {
-            return $modifica;
-            $modifica->close();
-            $this->_db->close();
+            return true;
         }
     }
 }
