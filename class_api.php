@@ -3,6 +3,7 @@ require_once "./class_model.php";
 class class_api extends class_model
 {
     protected $key = "56aabba320a8b164ab51be7d4d0af840e46fb912";
+    protected $debugger = false;
 
     private function consume_api($JsonSource)
     {
@@ -83,10 +84,12 @@ class class_api extends class_model
         if (!is_null($utm)) {
             $statusUTM = $this->updateMoneda($utm, "UTM");
         }
+        if ($this->debugger) {
 
-        echo "<pre>";
-        print_r($this->getMoneda());
-        echo "</pre>";
+            echo "<pre>";
+            print_r($this->getMoneda());
+            echo "</pre>";
+        }
     }
 
     private function getMoneda()
