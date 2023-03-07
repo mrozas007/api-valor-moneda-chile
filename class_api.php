@@ -68,6 +68,11 @@ class class_api extends class_model
 
     function actualizaMonedas()
     {
+        if ($this->debugger) {
+            ini_set('display_errors', 1);
+            ini_set('display_startup_errors', 1);
+            error_reporting(E_ALL);
+        }
 
         $dolar = $this->getDolar();
         if (!is_null($dolar)) {
@@ -84,23 +89,23 @@ class class_api extends class_model
         if (!is_null($utm)) {
             $statusUTM = $this->updateMoneda($utm, "UTM");
         }
-        if ($this->debugger) {
 
-            echo "<pre>";
-            print_r($this->getMoneda());
-            echo "</pre>";
+        if ($this->debugger) {
+            $this->getMoneda();
         }
+
         $this->_db->close();
     }
 
     private function getMoneda()
     {
-
         $sql = "SELECT *FROM ci_precio_monedas";
         $busca = $this->_db->query($sql);
-        $respuesta = $busca->fetch_all(MYSQLI_ASSOC);
-        if ($respuesta) {
-            return $respuesta;
+
+        while ($obj = $busca->fetch_array(MYSQLI_ASSOC)) {
+            echo "<pre>";
+            print_r($obj);
+            echo "</pre>";
         }
     }
 
